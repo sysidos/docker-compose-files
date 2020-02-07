@@ -1,0 +1,158 @@
+# version: "3"
+# services:
+#   #   mysql1:
+#   #     container_name: "mysql1"
+#   #     image: mysql:latest
+#   #     volumes:
+#   #       - ./mysql:/var/lib/mysql
+#   #     expose:
+#   #       - "3306"
+#   #     # environment:
+#   #     #   - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
+#   #     #   - MYSQL_DATABASE=${DATABASE}
+#   #     restart: always
+
+#   #   mysql2:
+#   #     container_name: "mysql2"
+#   #     image: mysql:latest
+#   #     volumes:
+#   #       - ./mysql:/var/lib/mysql
+#   #     expose:
+#   #       - "3306"
+#   #     # environment:
+#   #     #   - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
+#   #     #   - MYSQL_DATABASE=${DATABASE}
+#   #     restart: always
+#   management1:
+#     container_name: "management1"
+#     image: mysql/mysql-cluster
+#     # volumes:
+#     #   - ./mysql:/var/lib/mysql
+#     entrypoint:
+#         - "/entrypoint.sh"
+#       - ndb_mgmd
+#     networks:
+#       - cluster
+#     restart: always
+
+#     ndb1:
+#       container_name: "ndb1"
+#       image: mysql/mysql-cluster
+#     #   volumes:
+#     #     - ./mysql:/var/lib/mysql
+#     entrypoint:
+#         - "/entrypoint.sh"
+#         - ndbd
+#       networks:
+#         - cluster
+#       restart: always
+
+#     ndb2:
+#       container_name: "ndb2"
+#       image: mysql/mysql-cluster
+#     #   volumes:
+#     #     - ./mysql:/var/lib/mysql
+#     entrypoint:
+#         - "/entrypoint.sh"
+#         - ndbd
+#       networks:
+#         - cluster
+#       restart: always
+
+#       mysql1:
+#         container_name: "ndb2"
+#         image: mysql/mysql-cluster
+#         # volumes:
+#         #   - ./mysql:/var/lib/mysql
+#         entrypoint:
+#             - "/entrypoint.sh"
+#           - mysqld
+#         networks:
+#           - cluster
+#         restart: always
+# # [Entrypoint] GENERATED ROOT PASSWORD: yjseLaleH,Eweqpam@cyqaLOpXyl
+#     # nginx:
+#     #     image: nginx
+#     #     volumes:
+#     #         - ./nginx.conf:/etc/nginx/nginx.conf
+#     #     ports:
+#     #         - "3306:3306"
+#     #         - "8080:8080"
+#     #         - "9200:9200"
+#     #     links:
+#     #         - mysql1
+#     #         - mysql2
+
+#     # volumes:
+#     #     db-data:
+
+#     networks:
+#         cluster:
+
+version: "3.7"
+services:
+  management1:
+    container_name: "management1"
+    image: mysql/mysql-cluster
+    entrypoint:
+      - "/entrypoint.sh"
+      - ndb_mgmd
+    # networks:
+    #   clusterx:
+    #     ipv4_address: 192.168.0.2
+    restart: always
+
+  ndb1:
+    container_name: "ndb1"
+    image: mysql/mysql-cluster
+    entrypoint:
+      - "/entrypoint.sh"
+      - ndbd
+    # networks:
+    #   clusterx:
+    #     ipv4_address: 192.168.0.3
+    restart: always
+
+  ndb2:
+    container_name: "ndb2"
+    image: mysql/mysql-cluster
+    entrypoint:
+      - "/entrypoint.sh"
+      - ndbd
+    # networks:
+    #   clusterx:
+    #     ipv4_address: 192.168.0.4
+    restart: always
+
+  mysql1:
+    container_name: "mysql1"
+    image: mysql/mysql-cluster
+    entrypoint:
+      - "/entrypoint.sh"
+      - mysqld
+    # networks:
+    #   clusterx:
+    #     ipv4_address: 192.168.0.10
+    restart: always
+
+    #   networks:
+    #     clusterx:
+    #       ipam:
+    #         driver: default
+    #         config:
+    #           - subnet: "192.168.0.0/16"
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "3306:3306"
+      - "8080:8080"
+      - "9200:9200"
+      - "1186:1186"
+    links:
+      - management1
+      - ndb1
+      - ndb2
+      - mysql1

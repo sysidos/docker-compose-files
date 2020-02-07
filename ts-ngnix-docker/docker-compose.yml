@@ -1,0 +1,65 @@
+version: "3"
+services:
+  app:
+    restart: always
+    build: ./
+    volumes:
+      - ./app:/app
+    links:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - ./data/mongodb:/data/db
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 443:443
+      - 80:80
+    links:
+      - app
+    #   version: "3.7"
+# services:
+#   wordpress:
+#     image: wordpress
+#     ports:
+#       - "8080:80"
+#     networks:
+#       - overlay
+#     deploy:
+#       mode: replicated
+#       replicas: 2
+#       endpoint_mode: vip
+
+#   mysql:
+#     image: mysql
+#     volumes:
+#        - db-data:/var/lib/mysql/data
+#     networks:
+#        - overlay
+#     deploy:
+#       mode: replicated
+#       replicas: 2
+#       endpoint_mode: dnsrr
+
+# volumes:
+#   db-data:
+
+# networks:
+#   overlay:
+
+#     version: "3.7"
+# services:
+#   redis:
+#     image: redis:alpine
+#     deploy:
+#       replicas: 6
+#       update_config:
+#         parallelism: 2
+#         delay: 10s
+#       restart_policy:
+#         condition: on-failure
